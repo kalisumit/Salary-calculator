@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Employee Salary Calculator</title>
+  <link rel="stylesheet" href="salary.css">
+  <script src="salary.js" defer></script>
+</head>
+<body>
+  <h1>Employee Salary Calculator</h1>
+
+  <form id="salaryForm">
+    <input type="text" id="name" placeholder="Employee Name" required>
+    <input type="number" id="daysWorked" placeholder="Working Days" required>
+    <input type="number" id="overtimeHours" placeholder="Overtime Hours" required>
+    <input type="number" id="dailyRate" placeholder="Salary" required>
+    <br>
+    <button type="submit">Add Employee</button>
+  </form>
+
+  <div id="employeeList">
+    <h2>Employees</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Days Worked</th>
+          <th>Overtime Hours</th>
+          <th>Salary</th>
+        </tr>
+      </thead>
+      <tbody id="employeeTableBody"></tbody>
+    </table>
+    <div class="total-salary" id="totalSalary"></div>
+  </div>
+</body>
+</html>
