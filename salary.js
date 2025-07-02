@@ -13,12 +13,13 @@
     const name = document.getElementById("name").value;
     const daysWorked = parseInt(document.getElementById("daysWorked").value);
     const overtimeHours = parseInt(document.getElementById("overtimeHours").value);
-    const dailyRate = parseFloat(document.getElementById("dailyRate").value);
+    const dailyRate = parseInt(document.getElementById("dailyRate").value);
     const salary = (dailyRate / 30) * (daysWorked + (overtimeHours/8));
 
     const employee = {
       id: Date.now(), 
       name,
+      dailyRate,
       daysWorked,
       overtimeHours,
       salary
@@ -44,9 +45,10 @@
 
   function updateTable() {
     employeeTableBody.innerHTML = "";
-    employees.forEach(emp => {
+employees.forEach(emp => {
       const row = `<tr>
         <td>${emp.name}</td>
+        <td>${emp.dailyRate}</td>
         <td>${emp.daysWorked}</td>
         <td>${emp.overtimeHours}</td>
         <td>$${emp.salary.toFixed(2)}</td>
@@ -62,4 +64,3 @@
     localStorage.setItem("employees", JSON.stringify(employees));
   }
   window.deleteEmployee = deleteEmployee;
-
