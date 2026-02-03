@@ -2,38 +2,187 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employee Salary Calculator</title>
   <link rel="stylesheet" href="salary.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="salary.js" defer></script>
 </head>
 <body>
-  <h1>Employee Salary Calculator</h1>
+  <nav class="navbar">
+    <div class="container">
+      <h1>💼 Employee Salary Management System</h1>
+      <div class="nav-links">
+        <button onclick="scrollToSection('dashboard')">Dashboard</button>
+        <button onclick="scrollToSection('addEmployeeSection')">Add Employee</button>
+        <button onclick="scrollToSection('recordSalarySection')">Record Salary</button>
+        <button onclick="scrollToSection('monthlySummary')">Monitoring</button>
+      </div>
+    </div>
+  </nav>
 
-  <form id="salaryForm">
-    <input type="text" id="name" placeholder="Employee Name" required>
-    <input type="number" id="daysWorked" placeholder="Working Days" required>
-    <input type="number" id="overtimeHours" placeholder="Overtime Hours" required>
-    <input type="number" id="dailyRate" placeholder="Salary" required>
-    <br>
-    <button type="submit">Add Employee</button>
-  </form>
+  <div class="container">
+    <!-- Dashboard -->
+    <section id="dashboard" class="dashboard">
+      <h2>Dashboard</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Employees</h3>
+          <p class="stat-value" id="totalEmployees">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Paid (All Time)</h3>
+          <p class="stat-value" id="totalPaidAllTime">$0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Current Month Total</h3>
+          <p class="stat-value" id="currentMonthTotal">$0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Salary Records</h3>
+          <p class="stat-value" id="totalRecords">0</p>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-container">
+          <h3>Monthly Spending Trend</h3>
+          <canvas id="monthlyChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h3>Top Earners This Month</h3>
+          <canvas id="topEarnersChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add New Employee Profile -->
+    <section id="addEmployeeSection">
+      <h2>Add New Employee</h2>
+      <form id="employeeForm" class="form-card">
+        <div class="form-group">
+          <input type="text" id="newEmployeeName" placeholder="Employee Name" required>
+          <input type="number" id="newEmployeeMonthlySalary" placeholder="Monthly Salary" required>
+        </div>
+        <button type="submit" class="btn-primary">Add Employee</button>
+      </form>
+    </section>
+
+    <!-- Edit Employee Profile Modal -->
+    <div id="editEmployeeModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeEditForm()">&times;</span>
+        <h2>Edit Employee</h2>
+        <form id="editEmployeeForm">
+          <input type="text" id="editEmployeeName" placeholder="Employee Name" required>
+          <input type="number" id="editEmployeeMonthlySalary" placeholder="Monthly Salary" required>
+          <button type="submit" class="btn-primary">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Record Salary for Existing Employee -->
+    <section id="recordSalarySection">
+      <h2>Record Working Days & Overtime</h2>
+      <form id="salaryForm" class="form-card">
+        <div class="form-group">
+          <select id="employeeSelect" required>
+            <option value="">Select an Employee</option>
+          </select>
+          <input type="month" id="salaryMonth" required>
+          <input type="number" id="daysWorked" placeholder="Working Days" required>
+          <input type="number" id="overtimeHours" placeholder="Overtime Hours" required>
+        </div>
+        <button type="submit" class="btn-primary">Record Salary</button>
+      </form>
+    </section>
   
 
-  <div id="employeeList">
-    <h2>Employees</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Monthly Salary</th>
-          <th>Days Worked</th>
-          <th>Overtime Hours</th>
-          <th>Salary</th>
-        </tr>
-      </thead>
-      <tbody id="employeeTableBody"></tbody>
-    </table>
-    <div class="total-salary" id="totalSalary"></div>
+    <!-- Employee Profiles -->
+    <section id="employeeProfilesSection">
+      <h2>Employee Profiles</h2>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Monthly Salary</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employeeProfileTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Salary Records -->
+    <section id="salaryList">
+      <h2>Salary Records</h2>
+      <div class="section-controls">
+        <button onclick="exportToCSV()" class="btn-secondary">📥 Export to CSV</button>
+        <button onclick="printRecords()" class="btn-secondary">🖨️ Print</button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Monthly Salary</th>
+              <th>Days Worked</th>
+              <th>Overtime Hours</th>
+              <th>Salary Paid</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="employeeTableBody"></tbody>
+        </table>
+      </div>
+      <div class="total-salary" id="totalSalary"></div>
+    </section>
+
+    <!-- Monthly Salary Monitoring -->
+    <section id="monthlySummary">
+      <h2>Monthly Salary Monitoring & Archive</h2>
+      <div class="filter-controls">
+        <div class="month-selector">
+          <label for="monthFilter">Select Month:</label>
+          <input type="month" id="monthFilter">
+          <button onclick="filterByMonth()" class="btn-primary">Filter</button>
+          <button onclick="resetMonthFilter()" class="btn-secondary">Reset</button>
+        </div>
+        <div class="archive-controls">
+          <button onclick="archiveMonth()" class="btn-secondary">📦 Archive Month</button>
+          <button onclick="showArchives()" class="btn-secondary">📋 View Archives</button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee Name</th>
+              <th>Monthly Salary</th>
+              <th>Days Worked</th>
+              <th>Overtime Hours</th>
+              <th>Amount Paid</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="monthlySummaryTableBody"></tbody>
+        </table>
+      </div>
+      <div class="monthly-total" id="monthlyTotal"></div>
+    </section>
+
+    <!-- Archives Modal -->
+    <div id="archivesModal" class="modal">
+      <div class="modal-content wide">
+        <span class="close" onclick="closeArchives()">&times;</span>
+        <h2>Payroll Archives</h2>
+        <div id="archivesList"></div>
+      </div>
+    </div>
   </div>
-</body>
-</html>
+
+  <footer>
+    <p>&copy; 2026 Employee Salary Management System. All rights reserved.</p>
+  </footer>
